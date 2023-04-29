@@ -7,12 +7,14 @@ import java.util.Scanner;
 // "예약" 메뉴 입력 시 좌석의 등급을 입력받는 기능
 // 입력받은 좌석 등급의 현재 상태를 출력하는 기능
 // 예약자 이름과 좌석 번호를 입력받는 기능
+// 좌석 타입, 예약자 이름, 좌석 번호로 좌석을 예약하는 기능
 class ReservationSystem {
 
   public static final int RESERVATION = 1;
   public static final int INQUIRY = 2;
   public static final int CANCEL = 3;
   public static final int CLOSE = 4;
+  private static final String SEAT_STATE_MESSAGE = "%s>>";
 
   private Line[] lines;
 
@@ -20,9 +22,24 @@ class ReservationSystem {
     this.lines = new Line[]{new Line(Line.S_CLASS), new Line(Line.A_CLASS), new Line(Line.B_CLASS)};
   }
 
-  Line getLine(int seatClass) {
-    int lineIndex = seatClass - 1;
-    return lines[lineIndex];
+  void printLineState(int seatClass) {
+    Line line = getTargetLine(seatClass);
+
+    System.out.printf(SEAT_STATE_MESSAGE, line.getSeatClass());
+    for (Seat seat : line.getSeats()) {
+      System.out.print(" " + seat.getState());
+    }
+    System.out.println();
+  }
+
+  void reserve(int seatClass, String name, int seatNumber) {
+    Line line = getTargetLine(seatClass);
+    line.reserve(name, seatNumber);
+  }
+
+  private Line getTargetLine(int seatClass) {
+    int targetIndex = seatClass - 1;
+    return lines[targetIndex];
   }
 }
 
@@ -43,6 +60,11 @@ class Line {
     }
   }
 
+  void reserve(String name, int seatNumber) {
+    int targetIndex = seatNumber - 1;
+    seats[targetIndex].reserve(name);
+  }
+
   String getSeatClass() {
     return seatClass;
   }
@@ -61,6 +83,10 @@ class Seat {
     this.state = EMPTY;
   }
 
+  void reserve(String name) {
+    state = name;
+  }
+
   String getState() {
     return state;
   }
@@ -71,7 +97,6 @@ public class Problem12 {
   private static final String START_MESSAGE = "명품콘서트홀 예약 시스템입니다.";
   private static final String MENU_INPUT_MESSAGE = "예약:1, 조회:2, 취소:3, 끝내기:4>>";
   private static final String SEAT_CLASS_INPUT_MESSAGE = "좌석구분 S(1), A(2), B(3)>>";
-  private static final String SEAT_STATE_MESSAGE = "%s>>";
   private static final String NAME_INPUT_MESSAGE = "이름>>";
   private static final String SEAT_NUMBER_INPUT_MESSAGE = "번호>>";
 
@@ -81,26 +106,25 @@ public class Problem12 {
 
     System.out.println(START_MESSAGE);
 
-    System.out.print(MENU_INPUT_MESSAGE);
+    while (true) {
+      System.out.print(MENU_INPUT_MESSAGE);
+      int menu = scanner.nextInt();
 
-    int menu = scanner.nextInt();
-    if (menu == ReservationSystem.RESERVATION) {
-      System.out.print(SEAT_CLASS_INPUT_MESSAGE);
+      switch (menu) {
+        case ReservationSystem.RESERVATION:
+          System.out.print(SEAT_CLASS_INPUT_MESSAGE);
+          int seatClass = scanner.nextInt();
 
-      int seatClass = scanner.nextInt();
-      Line line = reservationSystem.getLine(seatClass);
+          reservationSystem.printLineState(seatClass);
 
-      System.out.printf(SEAT_STATE_MESSAGE, line.getSeatClass());
-      for (Seat seat : line.getSeats()) {
-        System.out.print(" " + seat.getState());
+          System.out.print(NAME_INPUT_MESSAGE);
+          String name = scanner.next();
+
+          System.out.print(SEAT_NUMBER_INPUT_MESSAGE);
+          int seatNumber = scanner.nextInt();
+
+          reservationSystem.reserve(seatClass, name, seatNumber);
       }
-      System.out.println();
-
-      System.out.print(NAME_INPUT_MESSAGE);
-      String name = scanner.next();
-
-      System.out.print(SEAT_NUMBER_INPUT_MESSAGE);
-      int seatNumber = scanner.nextInt();
     }
   }
 }
