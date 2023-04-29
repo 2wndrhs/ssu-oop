@@ -10,6 +10,8 @@ import java.util.Scanner;
 // 좌석 타입, 예약자 이름, 좌석 번호로 좌석을 예약하는 기능
 // "조회" 메뉴 입력 시 모든 좌석의 상태를 출력하는 기능
 // "취소" 메뉴 입력 시 좌석의 등급을 입력받는 기능
+// 취소할 예약자의 이름을 입력받는 기능
+// 좌석 타입, 예약자의 이름으로 좌석을 취소하는 기능
 class ReservationSystem {
 
   public static final int RESERVATION = 1;
@@ -27,6 +29,11 @@ class ReservationSystem {
   void reserve(int seatClass, String name, int seatNumber) {
     Line line = getTargetLine(seatClass);
     line.reserve(name, seatNumber);
+  }
+
+  void cancel(int seatClass, String name) {
+    Line line = getTargetLine(seatClass);
+    line.cancel(name);
   }
 
   void printLineState(int seatClass) {
@@ -73,6 +80,14 @@ class Line {
     seats[targetIndex].reserve(name);
   }
 
+  void cancel(String name) {
+    for (Seat seat : seats) {
+      if (name.equals(seat.getState())) {
+        seat.cancel();
+      }
+    }
+  }
+
   String getSeatClass() {
     return seatClass;
   }
@@ -93,6 +108,10 @@ class Seat {
 
   void reserve(String name) {
     state = name;
+  }
+
+  void cancel() {
+    state = EMPTY;
   }
 
   String getState() {
@@ -142,8 +161,14 @@ public class Problem12 {
 
         case ReservationSystem.CANCEL:
           System.out.print(SEAT_CLASS_INPUT_MESSAGE);
-          int seatClassCancel = scanner.nextInt();
+          int cancelSeatClass = scanner.nextInt();
 
+          reservationSystem.printLineState(cancelSeatClass);
+
+          System.out.print(NAME_INPUT_MESSAGE);
+          String cancelName = scanner.next();
+
+          reservationSystem.cancel(cancelSeatClass, cancelName);
           break;
       }
     }
