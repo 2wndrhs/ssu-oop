@@ -12,6 +12,7 @@ import java.util.Scanner;
 // "취소" 메뉴 입력 시 좌석의 등급을 입력받는 기능
 // 취소할 예약자의 이름을 입력받는 기능
 // 좌석 타입, 예약자의 이름으로 좌석을 취소하는 기능
+// "끝내기" 메뉴 입력 시 애플리케이션을 종료하는 기능
 class ReservationSystem {
 
   public static final int RESERVATION = 1;
@@ -134,6 +135,7 @@ public class Problem12 {
 
     System.out.println(START_MESSAGE);
 
+    ReservationSystem:
     while (true) {
       System.out.print(MENU_INPUT_MESSAGE);
       int menu = scanner.nextInt();
@@ -170,7 +172,12 @@ public class Problem12 {
 
           reservationSystem.cancel(cancelSeatClass, cancelName);
           break;
+
+        case ReservationSystem.CLOSE:
+          break ReservationSystem;
       }
     }
+
+    scanner.close();
   }
 }
