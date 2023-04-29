@@ -8,6 +8,7 @@ import java.util.Scanner;
 // 입력받은 좌석 등급의 현재 상태를 출력하는 기능
 // 예약자 이름과 좌석 번호를 입력받는 기능
 // 좌석 타입, 예약자 이름, 좌석 번호로 좌석을 예약하는 기능
+// "조회" 메뉴 입력 시 모든 좌석의 상태를 출력하는 기능
 class ReservationSystem {
 
   public static final int RESERVATION = 1;
@@ -22,6 +23,11 @@ class ReservationSystem {
     this.lines = new Line[]{new Line(Line.S_CLASS), new Line(Line.A_CLASS), new Line(Line.B_CLASS)};
   }
 
+  void reserve(int seatClass, String name, int seatNumber) {
+    Line line = getTargetLine(seatClass);
+    line.reserve(name, seatNumber);
+  }
+
   void printLineState(int seatClass) {
     Line line = getTargetLine(seatClass);
 
@@ -32,9 +38,10 @@ class ReservationSystem {
     System.out.println();
   }
 
-  void reserve(int seatClass, String name, int seatNumber) {
-    Line line = getTargetLine(seatClass);
-    line.reserve(name, seatNumber);
+  void printAllLineState() {
+    for (int seatClass = 1; seatClass <= lines.length; seatClass++) {
+      printLineState(seatClass);
+    }
   }
 
   private Line getTargetLine(int seatClass) {
@@ -124,6 +131,10 @@ public class Problem12 {
           int seatNumber = scanner.nextInt();
 
           reservationSystem.reserve(seatClass, name, seatNumber);
+          break;
+        case ReservationSystem.INQUIRY:
+          reservationSystem.printAllLineState();
+          break;
       }
     }
   }
