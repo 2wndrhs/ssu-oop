@@ -1,26 +1,14 @@
 package HW3;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
-//  시작 메시지를 출력하는 기능
-//  예약 시스템의 메뉴를 입력받는 기능
-// "예약" 메뉴 입력 시 좌석의 등급을 입력받는 기능
-// 입력받은 좌석 등급의 현재 상태를 출력하는 기능
-// 예약자 이름과 좌석 번호를 입력받는 기능
-// 좌석 타입, 예약자 이름, 좌석 번호로 좌석을 예약하는 기능
-// "조회" 메뉴 입력 시 모든 좌석의 상태를 출력하는 기능
-// "취소" 메뉴 입력 시 좌석의 등급을 입력받는 기능
-// 취소할 예약자의 이름을 입력받는 기능
-// 좌석 타입, 예약자의 이름으로 좌석을 취소하는 기능
-// "끝내기" 메뉴 입력 시 애플리케이션을 종료하는 기능
 class ReservationSystem {
 
   public static final int RESERVATION = 1;
   public static final int INQUIRY = 2;
   public static final int CANCEL = 3;
   public static final int CLOSE = 4;
-  private static final String SEAT_STATE_MESSAGE = "%s>>";
-
   private Line[] lines;
 
   ReservationSystem() {
@@ -37,25 +25,18 @@ class ReservationSystem {
     line.cancel(name);
   }
 
-  void printLineState(int seatClass) {
+  boolean isNameExist(int seatClass, String name) {
     Line line = getTargetLine(seatClass);
-
-    System.out.printf(SEAT_STATE_MESSAGE, line.getSeatClass());
-    for (Seat seat : line.getSeats()) {
-      System.out.print(" " + seat.getState());
-    }
-    System.out.println();
+    return line.isNameExist(name);
   }
 
-  void printAllLineState() {
-    for (int seatClass = 1; seatClass <= lines.length; seatClass++) {
-      printLineState(seatClass);
-    }
-  }
-
-  private Line getTargetLine(int seatClass) {
+  Line getTargetLine(int seatClass) {
     int targetIndex = seatClass - 1;
     return lines[targetIndex];
+  }
+
+  Line[] getLines() {
+    return lines;
   }
 }
 
@@ -87,6 +68,16 @@ class Line {
         seat.cancel();
       }
     }
+  }
+
+  boolean isNameExist(String name) {
+    for (Seat seat : seats) {
+      if (name.equals(seat.getState())) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   String getSeatClass() {
@@ -125,59 +116,154 @@ public class Problem12 {
   private static final String START_MESSAGE = "명품콘서트홀 예약 시스템입니다.";
   private static final String MENU_INPUT_MESSAGE = "예약:1, 조회:2, 취소:3, 끝내기:4>>";
   private static final String SEAT_CLASS_INPUT_MESSAGE = "좌석구분 S(1), A(2), B(3)>>";
+  private static final String SEAT_STATE_MESSAGE = "%s>>";
   private static final String NAME_INPUT_MESSAGE = "이름>>";
   private static final String SEAT_NUMBER_INPUT_MESSAGE = "번호>>";
   private static final String INQUIRY_COMPLETE_MESSAGE = "<<<조회를 완료하였습니다.>>>";
+  private static final String INVALID_INPUT_MESSAGE = "잘못된 입력입니다. 다시 입력해주세요.";
+  private static final Scanner scanner = new Scanner(System.in);
+  private static final ReservationSystem reservationSystem = new ReservationSystem();
 
   public static void main(String[] args) {
-    Scanner scanner = new Scanner(System.in);
-    ReservationSystem reservationSystem = new ReservationSystem();
-
     System.out.println(START_MESSAGE);
 
     ReservationSystem:
     while (true) {
-      System.out.print(MENU_INPUT_MESSAGE);
-      int menu = scanner.nextInt();
+      int menu = readMenu();
 
       switch (menu) {
         case ReservationSystem.RESERVATION:
-          System.out.print(SEAT_CLASS_INPUT_MESSAGE);
-          int seatClass = scanner.nextInt();
-
-          reservationSystem.printLineState(seatClass);
-
-          System.out.print(NAME_INPUT_MESSAGE);
-          String name = scanner.next();
-
-          System.out.print(SEAT_NUMBER_INPUT_MESSAGE);
-          int seatNumber = scanner.nextInt();
-
-          reservationSystem.reserve(seatClass, name, seatNumber);
+          reserve();
           break;
-
         case ReservationSystem.INQUIRY:
-          reservationSystem.printAllLineState();
-          System.out.println(INQUIRY_COMPLETE_MESSAGE);
+          inquiry();
           break;
-
         case ReservationSystem.CANCEL:
-          System.out.print(SEAT_CLASS_INPUT_MESSAGE);
-          int cancelSeatClass = scanner.nextInt();
-
-          reservationSystem.printLineState(cancelSeatClass);
-
-          System.out.print(NAME_INPUT_MESSAGE);
-          String cancelName = scanner.next();
-
-          reservationSystem.cancel(cancelSeatClass, cancelName);
+          cancel();
           break;
-
         case ReservationSystem.CLOSE:
           break ReservationSystem;
       }
     }
 
     scanner.close();
+  }
+
+  static void reserve() {
+    int seatClass = readSeatClass();
+
+    Line line = reservationSystem.getTargetLine(seatClass);
+    printLineState(line);
+
+    System.out.print(NAME_INPUT_MESSAGE);
+
+    String name = scanner.next();
+    int seatNumber = readSeatNumber();
+
+    reservationSystem.reserve(seatClass, name, seatNumber);
+  }
+
+  static void inquiry() {
+    Line[] lines = reservationSystem.getLines();
+    for (Line line : lines) {
+      printLineState(line);
+    }
+
+    System.out.println(INQUIRY_COMPLETE_MESSAGE);
+  }
+
+  static void cancel() {
+    int cancelSeatClass = readSeatClass();
+
+    Line line = reservationSystem.getTargetLine(cancelSeatClass);
+    printLineState(line);
+
+    String cancelName = readCancelName(cancelSeatClass);
+
+    reservationSystem.cancel(cancelSeatClass, cancelName);
+  }
+
+  static void printLineState(Line line) {
+    System.out.printf(SEAT_STATE_MESSAGE, line.getSeatClass());
+    for (Seat seat : line.getSeats()) {
+      System.out.print(" " + seat.getState());
+    }
+
+    System.out.println();
+  }
+
+  static int readMenu() {
+    int menu;
+    try {
+      System.out.print(MENU_INPUT_MESSAGE);
+
+      menu = scanner.nextInt();
+      if (menu < 1 || 4 < menu) {
+        throw new InputMismatchException();
+      }
+    } catch (InputMismatchException e) {
+      scanner.nextLine();
+      System.out.println(INVALID_INPUT_MESSAGE);
+
+      return readMenu();
+    }
+
+    return menu;
+  }
+
+  static int readSeatClass() {
+    int seatClass;
+    try {
+      System.out.print(SEAT_CLASS_INPUT_MESSAGE);
+
+      seatClass = scanner.nextInt();
+      if (seatClass < 1 || 3 < seatClass) {
+        throw new InputMismatchException();
+      }
+    } catch (InputMismatchException e) {
+      scanner.nextLine();
+      System.out.println(INVALID_INPUT_MESSAGE);
+
+      return readSeatClass();
+    }
+
+    return seatClass;
+  }
+
+  static int readSeatNumber() {
+    int seatNumber;
+    try {
+      System.out.print(SEAT_NUMBER_INPUT_MESSAGE);
+
+      seatNumber = scanner.nextInt();
+      if (seatNumber < 1 || 10 < seatNumber) {
+        throw new InputMismatchException();
+      }
+    } catch (InputMismatchException e) {
+      System.out.println(INVALID_INPUT_MESSAGE);
+      scanner.nextLine();
+
+      return readSeatNumber();
+    }
+
+    return seatNumber;
+  }
+
+  static String readCancelName(int seatClass) {
+    String cancelName;
+    try {
+      System.out.print(NAME_INPUT_MESSAGE);
+
+      cancelName = scanner.next();
+      if (!(reservationSystem.isNameExist(seatClass, cancelName))) {
+        throw new IllegalStateException();
+      }
+    } catch (IllegalStateException e) {
+      System.out.println(INVALID_INPUT_MESSAGE);
+      
+      return readCancelName(seatClass);
+    }
+
+    return cancelName;
   }
 }
