@@ -12,7 +12,7 @@ class Phone {
     this.tel = tel;
   }
 
-  boolean isSameName(String name) {
+  boolean hasSameName(String name) {
     return name.equals(this.name);
   }
 
@@ -44,11 +44,13 @@ class PhoneBook {
     Scanner scanner = new Scanner(System.in);
 
     System.out.print(PEOPLE_INPUT_MESSAGE);
+
     int people = scanner.nextInt();
     PhoneBook phoneBook = new PhoneBook(people);
 
     for (int index = 0; index < people; index++) {
       System.out.print(PHONE_INPUT_MESSAGE);
+
       String name = scanner.next();
       String tel = scanner.next();
       phoneBook.book[index] = new Phone(name, tel);
@@ -58,6 +60,7 @@ class PhoneBook {
 
     while (true) {
       System.out.print(SEARCH_MESSAGE);
+
       String query = scanner.next();
       if (query.equals(STOP_FLAG)) {
         break;
@@ -77,7 +80,7 @@ class PhoneBook {
 
   private Phone search(String query) {
     for (Phone phone : book) {
-      if (phone.isSameName(query)) {
+      if (phone.hasSameName(query)) {
         return phone;
       }
     }

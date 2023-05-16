@@ -33,6 +33,7 @@ class DicApp {
 
     while (true) {
       System.out.print(WORD_INPUT_MESSAGE);
+      
       String query = scanner.next();
       if (query.equals(STOP_FLAG)) {
         break;
