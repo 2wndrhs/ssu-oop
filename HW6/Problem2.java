@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 public class Problem2 {
 
-  private static final String INPUT_MESSAGE = "6개의 학점을 빈 칸으로 분리 입력(A/B/C/D/F)>>";
+  private static final String INPUT_MESSAGE = "6개의 학점을 빈 칸으로 분리 입력(A/B/C/D/F) >> ";
   private static final int GRADE_CAPACITY = 6;
   private static final Double A_GRADE = 4.0;
   private static final Double B_GRADE = 3.0;
@@ -25,11 +25,11 @@ public class Problem2 {
       gradeList.add(gradeInput);
     }
 
-    double gradeAverage = computeGradeAverage(gradeList);
-    System.out.println(gradeAverage);
+    double averageGrade = computeAverageGrade(gradeList);
+    System.out.println(averageGrade);
   }
 
-  static double computeGradeAverage(ArrayList<String> list) {
+  static double computeAverageGrade(ArrayList<String> list) {
     double sum = 0.0;
 
     for (String grade : list) {
