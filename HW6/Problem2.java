@@ -6,7 +6,7 @@ import java.util.Scanner;
 public class Problem2 {
 
   private static final String INPUT_MESSAGE = "6개의 학점을 빈 칸으로 분리 입력(A/B/C/D/F) >> ";
-  private static final int GRADE_CAPACITY = 6;
+  private static final int GRADE_LIST_SIZE = 6;
   private static final Double A_GRADE = 4.0;
   private static final Double B_GRADE = 3.0;
   private static final Double C_GRADE = 2.0;
@@ -16,11 +16,11 @@ public class Problem2 {
 
   public static void main(String[] args) {
     Scanner scanner = new Scanner(System.in);
-    ArrayList<String> gradeList = new ArrayList<>();
+    ArrayList<String> gradeList = new ArrayList<>(GRADE_LIST_SIZE);
 
     System.out.print(INPUT_MESSAGE);
 
-    while (gradeList.size() < GRADE_CAPACITY) {
+    while (gradeList.size() < GRADE_LIST_SIZE) {
       String gradeInput = scanner.next();
       gradeList.add(gradeInput);
     }
