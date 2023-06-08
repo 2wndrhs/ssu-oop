@@ -58,7 +58,7 @@ public class Problem6 {
         break;
       }
 
-      if (!cityMap.containsKey(input)) {
+      if (cityMap.get(input) == null) {
         System.out.printf(NO_RESULT_MESSAGE, input);
         System.out.println();
         continue;
